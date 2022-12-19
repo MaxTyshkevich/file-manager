@@ -71,6 +71,24 @@ const rn = async (pathFile, newFilename) => {
     throw Error('Invalid input');
   }
 
+  const pathToFile = resolve(process.cwd(), getCorrectPath(pathFile));
+
+  const objPath = parse(pathToFile);
+  objPath.name = newFilename;
+  objPath.base = objPath.name + objPath.ext;
+  const pathToNewFile = resolve(format(objPath));
+  try {
+    await rename(pathToFile, pathToNewFile);
+    return console.log('File been renamed!');
+  } catch (error) {
+    throw Error(messageError);
+  }
+};
+const cp = async (pathFile, newDirectory) => {
+  if (!pathFile || !newDirectory) {
+    throw Error('Invalid input');
+  }
+
   const pathToFile = resolve(getCorrectPath(pathFile));
 
   const objPath = parse(pathToFile);
@@ -84,7 +102,6 @@ const rn = async (pathFile, newFilename) => {
     throw Error(messageError);
   }
 };
-const cp = async (pathFile, newDirectory) => {};
 const mv = async (pathFile, newDirectory) => {};
 
 const rm = async (pathFile, arg2) => {
@@ -107,4 +124,4 @@ const rm = async (pathFile, arg2) => {
   }
 };
 
-export { cat, add, rm, rn };
+export { cat, add, rm, rn, cp };
