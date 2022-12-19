@@ -29,7 +29,10 @@ const getArchitecture = async () => {
   console.log(JSON.stringify(architecture));
 };
 
-const osCommands = async (arg) => {
+const osCommands = async (arg, arg2) => {
+  if (arg2) {
+    throw Error('Invalid input');
+  }
   switch (arg) {
     case '--EOL': {
       return getEOL();
@@ -47,7 +50,7 @@ const osCommands = async (arg) => {
       return getArchitecture();
     }
     default:
-      throw new Error('Oops');
+      throw Error('Invalid input');
   }
 };
 
