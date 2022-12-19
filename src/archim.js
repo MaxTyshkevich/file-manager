@@ -51,7 +51,7 @@ const decompress = async (pathFile, newDirectory) => {
   const gzip = createBrotliDecompress();
   try {
     await pipeline(source, gzip, destination);
-    console.log('file compressed');
+    console.log('file decompressed');
   } catch (error) {
     throw Error(messageError);
   }
