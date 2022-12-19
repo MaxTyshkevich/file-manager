@@ -16,8 +16,8 @@ const compress = async (pathFile, newDirectory) => {
     getCorrectPath(newDirectory)
   );
 
-  const pathName = parse(pathToFile).name;
-  const pathCopyFile = join(pathToNewDirectory, `${pathName}.gz`);
+  const pathName = parse(pathToFile).base;
+  const pathCopyFile = join(pathToNewDirectory, `${pathName}.br`);
   try {
     const source = createReadStream(pathToFile);
     const destination = createWriteStream(pathCopyFile);
@@ -43,7 +43,7 @@ const decompress = async (pathFile, newDirectory) => {
   );
 
   const pathName = parse(pathToFile).name;
-  const pathCopyFile = join(pathToNewDirectory, `${pathName}.gz`);
+  const pathCopyFile = join(pathToNewDirectory, `${pathName}`);
 
   const source = createReadStream(pathToFile);
   const destination = createWriteStream(pathCopyFile);
