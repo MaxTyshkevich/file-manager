@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { ls } from './ls.js';
 import { up, cd } from './navigation.js';
 import { osCommands } from './infoSystem.js';
-import { cat, add, rm, rn, cp } from './operations.js';
+import { cat, add, rm, rn, cp, mv } from './operations.js';
 
 import {
   welcomUser,
@@ -22,9 +22,10 @@ const CommandsManager = {
   rn,
   rm,
   cp,
+  mv,
 
   os: osCommands,
-  ['.exit']: () => process.exit(),
+  ['.exit']: async () => process.exit(),
 };
 
 chdir(homedir());

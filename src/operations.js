@@ -1,4 +1,4 @@
-import { createReadStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { writeFile, unlink, rename } from 'node:fs/promises';
 import { pipeline, finished } from 'node:stream/promises';
 import { messageError } from './error.js';
@@ -12,7 +12,6 @@ import path, {
   format,
 } from 'node:path';
 import { getCorrectPath } from './utils.js';
-import { chdir, cwd } from 'node:process';
 import os from 'node:os';
 
 const cat = async (pathFile, arg2) => {
@@ -84,25 +83,65 @@ const rn = async (pathFile, newFilename) => {
     throw Error(messageError);
   }
 };
+
 const cp = async (pathFile, newDirectory) => {
   if (!pathFile || !newDirectory) {
     throw Error('Invalid input');
   }
 
-  const pathToFile = resolve(getCorrectPath(pathFile));
+  const pathToFile = resolve(process.cwd(), getCorrectPath(pathFile));
+  const pathToNewDirectory = resolve(
+    process.cwd(),
+    getCorrectPath(newDirectory)
+  );
 
-  const objPath = parse(pathToFile);
-  objPath.name = newFilename;
-  objPath.base = objPath.name + objPath.ext;
-  const pathToNewFile = resolve(format(objPath));
+  const baseName = parse(pathToFile).base;
+  const pathCopyFile = join(pathToNewDirectory, baseName);
+
   try {
-    await rename(pathToFile, pathToNewFile);
-    console.log('File been renamed!');
+    const rs = createReadStream(pathToFile);
+    const ws = createWriteStream(pathCopyFile, { flags: 'wx' });
+
+    await pipeline(rs, ws);
+
+    console.log('File been copied!');
   } catch (error) {
     throw Error(messageError);
   }
 };
-const mv = async (pathFile, newDirectory) => {};
+
+const mv = async (pathFile, newDirectory) => {
+  if (!pathFile || !newDirectory) {
+    throw Error('Invalid input');
+  }
+
+  const pathToFile = resolve(process.cwd(), getCorrectPath(pathFile));
+  const pathToNewDirectory = resolve(
+    process.cwd(),
+    getCorrectPath(newDirectory)
+  );
+
+  const baseName = parse(pathToFile).base;
+  const pathCopyFile = join(pathToNewDirectory, baseName);
+
+  try {
+    const rs = createReadStream(pathToFile);
+    const ws = createWriteStream(pathCopyFile, { flags: 'wx' });
+
+    await pipeline(rs, ws);
+    await unlink(pathToFile);
+
+    console.log('File been moved!');
+  } catch (error) {
+    throw Error(messageError);
+  }
+
+  try {
+    await rm(pathFile);
+  } catch (error) {
+    throw Error(messageError);
+  }
+};
 
 const rm = async (pathFile, arg2) => {
   if (!pathFile || arg2) {
@@ -124,4 +163,4 @@ const rm = async (pathFile, arg2) => {
   }
 };
 
-export { cat, add, rm, rn, cp };
+export { cat, add, rm, rn, cp, mv };
