@@ -3,6 +3,7 @@ import { homedir } from 'node:os';
 import { ls } from './ls.js';
 import { up, cd } from './navigation.js';
 import { osCommands } from './infoSystem.js';
+import { hash } from './fileHash.js';
 import { cat, add, rm, rn, cp, mv } from './operations.js';
 
 import {
@@ -24,6 +25,7 @@ const CommandsManager = {
   cp,
   mv,
 
+  hash,
   os: osCommands,
   ['.exit']: async () => process.exit(),
 };
@@ -34,26 +36,25 @@ welcomUser();
 
 stdin.on('data', async (chunk) => {
   const [userCommand, arg, arg2] = parseUserCommand(chunk);
-  console.log('parsed: ', userCommand, arg, arg2);
   const handler = CommandsManager[userCommand];
 
   try {
+    if (typeof handler !== 'function') {
+      throw new Error('Invalid input');
+    }
+
     await handler(arg, arg2);
   } catch (error) {
-    /* test */
-    console.log(error);
-
-    console.log(error.message);
-    console.log('catch index.js');
+    console.error(error.message);
   }
 
   showCurrentFolder();
 });
 
-process.on('SIGINT', (code) => {
+process.on('SIGINT', () => {
   process.exit();
 });
 
-process.on('exit', (code) => {
+process.on('exit', () => {
   byeUser();
 });
