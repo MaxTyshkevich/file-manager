@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { ls } from './ls.js';
 import { up, cd } from './navigation.js';
 import { osCommands } from './infoSystem.js';
-import { cat, add, rm } from './operations.js';
+import { cat, add, rm, rn } from './operations.js';
 
 import {
   welcomUser,
@@ -19,6 +19,7 @@ const CommandsManager = {
 
   cat,
   add,
+  rn,
   rm,
 
   os: osCommands,

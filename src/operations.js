@@ -1,9 +1,16 @@
 import { createReadStream } from 'node:fs';
-import { writeFile, unlink } from 'node:fs/promises';
+import { writeFile, unlink, rename } from 'node:fs/promises';
 import { pipeline, finished } from 'node:stream/promises';
 import { messageError } from './error.js';
 import { open } from 'node:fs/promises';
-import path, { join, isAbsolute, resolve } from 'node:path';
+import path, {
+  join,
+  isAbsolute,
+  resolve,
+  relative,
+  parse,
+  format,
+} from 'node:path';
 import { getCorrectPath } from './utils.js';
 import { chdir, cwd } from 'node:process';
 import os from 'node:os';
@@ -59,7 +66,24 @@ async function isOpenReadFile(pathFile) {
   }
 }
 
-const rn = async (pathFile, newFilename) => {};
+const rn = async (pathFile, newFilename) => {
+  if (!pathFile || !newFilename) {
+    throw Error('Invalid input');
+  }
+
+  const pathToFile = resolve(getCorrectPath(pathFile));
+
+  const objPath = parse(pathToFile);
+  objPath.name = newFilename;
+  objPath.base = objPath.name + objPath.ext;
+  const pathToNewFile = resolve(format(objPath));
+  try {
+    await rename(pathToFile, pathToNewFile);
+    console.log('File been renamed!');
+  } catch (error) {
+    throw Error(messageError);
+  }
+};
 const cp = async (pathFile, newDirectory) => {};
 const mv = async (pathFile, newDirectory) => {};
 
@@ -83,4 +107,4 @@ const rm = async (pathFile, arg2) => {
   }
 };
 
-export { cat, add, rm };
+export { cat, add, rm, rn };
