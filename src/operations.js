@@ -1,15 +1,22 @@
-import { createReadStream, writeFile } from 'node:fs';
+import { createReadStream } from 'node:fs';
+import { writeFile, unlink } from 'node:fs/promises';
+import { pipeline, finished } from 'node:stream/promises';
 import { messageError } from './error.js';
 import { open } from 'node:fs/promises';
 import path, { join, isAbsolute, resolve } from 'node:path';
 import { getCorrectPath } from './utils.js';
+import { chdir, cwd } from 'node:process';
+import os from 'node:os';
 
-const cat = async (pathFile) => {
+const cat = async (pathFile, arg2) => {
+  if (!pathFile || arg2) {
+    throw Error('Invalid input');
+  }
+
   let pathToFile = getCorrectPath(pathFile);
   const isAbsolutePath = isAbsolute(pathToFile);
 
   if (!isAbsolutePath) {
-    /*  pathToFile = join(process.cwd(), pathFile); */
     pathToFile = path.join(process.cwd(), pathToFile);
   }
 
@@ -18,20 +25,25 @@ const cat = async (pathFile) => {
 
     const rs = createReadStream(pathToFile);
 
-    rs.pipe(process.stdout);
-
-    return true;
+    console.log(os.EOL);
+    await pipeline(rs, process.stdout, { end: false });
+    console.log(os.EOL);
   } catch (error) {
-    console.error(messageError);
+    throw Error(messageError);
   }
 };
 
-const add = async (fileName) => {
+const add = async (fileName, arg2) => {
+  if (!fileName || arg2) {
+    throw Error('Invalid input');
+  }
+
   try {
-    await writeFile(process.cwd(), fileName, { flag: 'wx' });
-    return true;
+    const currentPart = join(process.cwd(), fileName);
+    await writeFile(currentPart, '');
+    console.log('File been created!');
   } catch (error) {
-    console.error(messageError);
+    throw Error(messageError);
   }
 };
 
@@ -47,14 +59,28 @@ async function isOpenReadFile(pathFile) {
   }
 }
 
-const rn = (pathFile, newFilename) => {};
-const cp = (pathFile, newDirectory) => {};
-const mv = (pathFile, newDirectory) => {};
-const rm = (pathFile) => {};
+const rn = async (pathFile, newFilename) => {};
+const cp = async (pathFile, newDirectory) => {};
+const mv = async (pathFile, newDirectory) => {};
 
-console.log(`res:`, resolve('/'));
-console.log(`res:`, resolve('D:'));
-console.log(`res:`, isAbsolute('/'));
-console.log(`res:`, isAbsolute('D:/'));
+const rm = async (pathFile, arg2) => {
+  if (!pathFile || arg2) {
+    throw Error('Invalid input');
+  }
 
-export { cat, add };
+  let pathToFile = getCorrectPath(pathFile);
+  const isAbsolutePath = isAbsolute(pathToFile);
+
+  if (!isAbsolutePath) {
+    pathToFile = path.join(process.cwd(), pathToFile);
+  }
+
+  try {
+    await unlink(pathToFile);
+    console.log('File been removed!');
+  } catch (error) {
+    throw Error(messageError);
+  }
+};
+
+export { cat, add, rm };

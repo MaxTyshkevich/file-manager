@@ -2,33 +2,34 @@ import { readdir, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { messageError } from './error.js';
 
-const ls = async () => {
+const ls = async (arg1, arg2) => {
+  if (arg1 || arg2) {
+    throw Error('Invalid input');
+  }
+
   const path = resolve(process.cwd());
 
   const listFiles = [];
   const listDirectories = [];
 
   try {
-    const files = await readdir(path);
+    const files = await readdir(path, { withFileTypes: true });
 
     for (let file of files) {
-      const filePath = join(path, file);
-
-      const statFile = await stat(filePath);
-
+      const isDirectory = file.isDirectory();
       const info = {
-        name: file,
-        type: statFile.isFile() ? 'file' : 'directory',
+        name: file.name,
+        type: isDirectory ? 'directory' : 'file',
       };
 
-      if (statFile.isFile()) {
-        listFiles.push(info);
-      } else {
+      if (isDirectory) {
         listDirectories.push(info);
+      } else {
+        listFiles.push(info);
       }
     }
   } catch (error) {
-    console.error(messageError);
+    throw Error(messageError);
   }
   listDirectories.sort();
   listFiles.sort();

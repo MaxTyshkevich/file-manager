@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { ls } from './ls.js';
 import { up, cd } from './navigation.js';
 import { osCommands } from './infoSystem.js';
-import { cat, add } from './operations.js';
+import { cat, add, rm } from './operations.js';
 
 import {
   welcomUser,
@@ -13,11 +13,14 @@ import {
 } from './utils.js';
 
 const CommandsManager = {
+  up,
+  ls,
+  cd,
+
   cat,
   add,
-  ls,
-  up,
-  cd,
+  rm,
+
   os: osCommands,
   ['.exit']: () => process.exit(),
 };
@@ -34,7 +37,11 @@ stdin.on('data', async (chunk) => {
   try {
     await handler(arg, arg2);
   } catch (error) {
-    console.log('Operation failed');
+    /* test */
+    console.log(error);
+
+    console.log(error.message);
+    console.log('catch index.js');
   }
 
   showCurrentFolder();

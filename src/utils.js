@@ -53,6 +53,10 @@ const parseUserCommand = (chunk) => {
 };
 
 function getCorrectPath(newPath) {
+  if ('../' == newPath || './' == newPath) {
+    return newPath;
+  }
+
   const pathObject = path.parse(newPath);
   if (!pathObject.root.length) {
     return path.format(pathObject);
