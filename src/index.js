@@ -1,11 +1,6 @@
 import process, { stdin, chdir } from 'node:process';
 import { homedir } from 'node:os';
-import { ls } from './ls.js';
-import { up, cd } from './navigation.js';
-import { osCommands } from './infoSystem.js';
-import { hash } from './fileHash.js';
-import { cat, add, rm, rn, cp, mv } from './operations.js';
-import { decompress, compress } from './archim.js';
+import { CommandsManager } from './comands.js';
 import {
   welcomUser,
   byeUser,
@@ -13,32 +8,14 @@ import {
   parseUserCommand,
 } from './utils.js';
 
-const CommandsManager = {
-  up,
-  ls,
-  cd,
-
-  cat,
-  add,
-  rn,
-  rm,
-  cp,
-  mv,
-
-  hash,
-
-  decompress,
-  compress,
-
-  os: osCommands,
-  ['.exit']: async () => process.exit(),
-};
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'process';
 
 chdir(homedir());
-
 welcomUser();
 
-stdin.on('data', async (chunk) => {
+const rl = readline.createInterface({ input, output });
+rl.on('line', async (chunk) => {
   const [userCommand, arg, arg2] = parseUserCommand(chunk);
   const handler = CommandsManager[userCommand];
 
@@ -55,10 +32,5 @@ stdin.on('data', async (chunk) => {
   showCurrentFolder();
 });
 
-process.on('SIGINT', () => {
-  process.exit();
-});
-
-process.on('exit', () => {
-  byeUser();
-});
+rl.on('SIGINT', () => process.exit());
+process.on('exit', () => byeUser());

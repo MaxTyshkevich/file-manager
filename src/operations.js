@@ -1,16 +1,9 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { writeFile, unlink, rename } from 'node:fs/promises';
-import { pipeline, finished } from 'node:stream/promises';
+import { pipeline } from 'node:stream/promises';
 import { messageError } from './error.js';
 import { open } from 'node:fs/promises';
-import path, {
-  join,
-  isAbsolute,
-  resolve,
-  relative,
-  parse,
-  format,
-} from 'node:path';
+import path, { join, isAbsolute, resolve, parse, format } from 'node:path';
 import { getCorrectPath } from './utils.js';
 import os from 'node:os';
 
