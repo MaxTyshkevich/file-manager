@@ -1,10 +1,10 @@
-import { readdir, stat } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
-import { messageError } from './error.js';
+import { readdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { OperationError, InvalitError } from './error.js';
 
 const ls = async (arg1, arg2) => {
   if (arg1 || arg2) {
-    throw Error('Invalid input');
+    throw new InvalitError();
   }
 
   const path = resolve(process.cwd());
@@ -29,7 +29,7 @@ const ls = async (arg1, arg2) => {
       }
     }
   } catch (error) {
-    throw Error(messageError);
+    throw new OperationError();
   }
   listDirectories.sort();
   listFiles.sort();

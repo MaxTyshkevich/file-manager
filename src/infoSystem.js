@@ -1,5 +1,5 @@
 import os from 'node:os';
-
+import { OperationError, InvalitError } from './error.js';
 const getEOL = async () => {
   console.log(JSON.stringify(os.EOL));
 };
@@ -31,7 +31,7 @@ const getArchitecture = async () => {
 
 const osCommands = async (arg, arg2) => {
   if (arg2) {
-    throw Error('Invalid input');
+    throw new InvalitError();
   }
   switch (arg) {
     case '--EOL': {
@@ -50,7 +50,7 @@ const osCommands = async (arg, arg2) => {
       return getArchitecture();
     }
     default:
-      throw Error('Invalid input');
+      throw new InvalitError();
   }
 };
 

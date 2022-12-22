@@ -1,13 +1,13 @@
 import { getCorrectPath } from './utils.js';
 import { resolve, parse, join } from 'node:path';
-import { messageError } from './error.js';
+import { OperationError, InvalitError } from './error.js';
 import { createReadStream, createWriteStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { createBrotliCompress, createBrotliDecompress } from 'node:zlib';
 
 const compress = async (pathFile, newDirectory) => {
   if (!pathFile || !newDirectory) {
-    throw Error('Invalid input');
+    throw new InvalitError();
   }
 
   const pathToFile = resolve(process.cwd(), getCorrectPath(pathFile));
@@ -27,13 +27,13 @@ const compress = async (pathFile, newDirectory) => {
     await pipeline(source, gzip, destination);
     console.log('file compressed');
   } catch (error) {
-    throw Error(messageError);
+    throw new OperationError();
   }
 };
 
 const decompress = async (pathFile, newDirectory) => {
   if (!pathFile || !newDirectory) {
-    throw Error('Invalid input');
+    throw new InvalitError();
   }
 
   const pathToFile = resolve(process.cwd(), getCorrectPath(pathFile));
@@ -53,7 +53,7 @@ const decompress = async (pathFile, newDirectory) => {
     await pipeline(source, gzip, destination);
     console.log('file decompressed');
   } catch (error) {
-    throw Error(messageError);
+    throw new OperationError();
   }
 };
 
